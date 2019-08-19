@@ -1,0 +1,21 @@
+{
+  "name": "Stations",
+  "short_name": "Stations",
+  "icons": [{
+    "src": "/images/metro-de-transporte-publico-24.png",
+    "sizes": "24x24",
+    "type": "image/png"
+  }, {
+    "src": "/images/metro-de-transporte-publico-128.png",
+    "sizes": "128x128",
+    "type": "image/png"
+  }, {
+    "src": "/images/metro-de-transporte-publico-512.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }],
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#dbb240",
+  "theme_color": "#de892f"
+}

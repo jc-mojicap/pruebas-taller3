@@ -41,6 +41,8 @@
         app.getSchedule(key, label);
         app.selectedTimetables.push({key: key, label: label});
         app.toggleAddDialog(false);
+        app.saveSelectedTimetables();
+//        idbApp.addStations(app.selectedTimetables);
     });
 
     document.getElementById('butAddCancel').addEventListener('click', function () {
@@ -113,6 +115,21 @@
     app.getSchedule = function (key, label) {
         var url = 'https://api-ratp.pierre-grimaud.fr/v3/schedules/' + key;
 
+        // cache logic
+        if ('caches' in window) {
+            caches.match(url).then(function(response) {
+                if (response) {
+                    response.json().then(function updateFromCache(json) {
+                        var results = json.result;
+                        results.key = key;
+                        results.label = label;
+                        results.created = json._metadata.date;
+                        app.updateTimetableCard(results);
+                    });
+                }
+            });
+        }
+
         var request = new XMLHttpRequest();
         request.onreadystatechange = function () {
             if (request.readyState === XMLHttpRequest.DONE) {
@@ -168,6 +185,11 @@
 
     };
 
+    // Save list to localStorage.
+    app.saveSelectedTimetables = function() {
+        var selectedTimetables = JSON.stringify(app.selectedTimetables);
+        localStorage.selectedTimetables = selectedTimetables;
+    };
 
     /************************************************************************
      *
@@ -179,9 +201,118 @@
      *   Instead, check out IDB (https://www.npmjs.com/package/idb) or
      *   SimpleDB (https://gist.github.com/inexorabletash/c8069c042b734519680c)
      ************************************************************************/
-
+    /*
     app.getSchedule('metros/1/bastille/A', 'Bastille, Direction La Défense');
     app.selectedTimetables = [
         {key: initialStationTimetable.key, label: initialStationTimetable.label}
-    ];
+    ];*/
+
+    // Startup code here
+    app.selectedTimetables = localStorage.selectedTimetables;
+    if (app.selectedTimetables) {
+        app.selectedTimetables = JSON.parse(app.selectedTimetables);
+        app.selectedTimetables.forEach(function(x) {
+            app.getSchedule(x.key, x.label);
+        });
+    } else {
+        /* The user is using the app for the first time, or the user has not
+         * saved any cities, so show the user some fake data. A real app in this
+         * scenario could guess the user's location via IP lookup and then inject
+         * that data into the page.
+         */
+        app.getSchedule('metros/1/bastille/A', 'Bastille, Direction La Défense');
+        app.selectedTimetables = [
+            {key: initialStationTimetable.key, label: initialStationTimetable.label}
+        ];
+        app.saveSelectedTimetables();
+    }
+
+    // add service worker code here
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then((reg) => {
+                    console.log('Service worker registered.', reg);
+                });
+        });
+    }
+
 })();
+
+
+
+
+
+/*
+
+    // ------------------------------------------------
+    // ----------------- IndexedDB --------------------
+    // ------------------------------------------------
+
+var idbApp = (function() {
+  'use strict';
+  
+    if (!('indexedDB' in window)) {
+        console.log('This browser doesn\'t support IndexedDB');
+        return;
+    }
+
+    var dbPromise = idb.open('stations-paris', 3, function(upgradeDb) {
+        switch (upgradeDb.oldVersion) {
+          case 0:
+            // a placeholder case so that the switch block will 
+            // execute when the database is first created
+            // (oldVersion is 0)
+          case 1:
+            console.log('Creating the stations object store');
+            upgradeDb.createObjectStore('stations', {keyPath: 'id'});
+          case 2:
+            console.log('Creating a key index');
+            var store = upgradeDb.transaction.objectStore('stations');
+            store.createIndex('key', 'key', {unique: true});
+
+          // TODO 4.2 - create 'price' and 'description' indexes
+
+          // TODO 5.1 - create an 'orders' object store
+
+        }
+      });
+
+    function addStations(data) {
+
+        dbPromise.then(function(db) {
+            var tx = db.transaction('stations', 'readwrite');
+            var store = tx.objectStore('stations');
+            var items = data;
+            return Promise.all(items.map(function(item) {
+                console.log('Adding item: ', item);
+                return store.add(item);
+            })
+            ).catch(function(e) {
+                tx.abort();
+                console.log(e);
+            }).then(function() {
+                console.log('All items added successfully!');
+            });
+        });
+    }
+
+    function getAll() {
+
+        return dbPromise.then(function(db) {
+            var tx = db.transaction('stations', 'readonly');
+            var store = tx.objectStore('stations');
+            var index = store.index('key');
+            return index.getAll(key);
+        });
+    }
+
+
+  return {
+    dbPromise: (dbPromise),
+    addStations: (addStations),
+    getAll: (getAll)
+  };
+})();
+
+*/

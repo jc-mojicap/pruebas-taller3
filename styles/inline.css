@@ -112,7 +112,8 @@ body {
     background: url(/images/ic_refresh_white_24px.svg) center center no-repeat; }
   .header #butAdd {
     background: url(/images/ic_add_white_24px.svg) center center no-repeat; }
-
+  .header #butInstall {
+    background: url(/images/install.svg) center center no-repeat; }
 .header__title {
   font-weight: 400;
   font-size: 20px;

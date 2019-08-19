@@ -23,12 +23,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Paris Métro 1</title>
   <link rel="stylesheet" type="text/css" href="styles/inline.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#de892f" />
 
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="stations-paris-PWA">
+  <link rel="apple-touch-icon" href="/images/icons/icono-128.png">
+  <!-- <script type="text/javascript" src="scripts/idb.js"></script> -->
 </head>
 <body>
 
   <header class="header">
     <h1 class="header__title">Paris Métro 1</h1>
+    <button id="butInstall" class="headerButton" hidden></button>
     <button id="butRefresh" class="headerButton" aria-label="Refresh"></button>
     <button id="butAdd" class="headerButton" aria-label="Add"></button>
   </header>
@@ -93,6 +101,24 @@
 
   <!-- Uncomment the line below when ready to test with fake data -->
   <script src="scripts/app.js" async></script>
+  <script src="scripts/install.js" async></script>
 
 </body>
+  <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+
+  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-app.js"></script>
+
+  <!-- Add Firebase products that you want to use -->
+  <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-database.js"></script>
+
+  <script>
+    // TODO: Replace the following with your app's Firebase project configuration
+    var firebaseConfig = {
+      // ...
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
 </html>
