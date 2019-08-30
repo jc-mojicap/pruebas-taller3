@@ -1,0 +1,16 @@
+{
+  "name": "pruebas-taller3",
+  "version": "1.0.0",
+  "description": "",
+  "private": "true",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jc-mojicap/pruebas-taller3.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "lighthouse": "2.9.4"
+  }
+}
